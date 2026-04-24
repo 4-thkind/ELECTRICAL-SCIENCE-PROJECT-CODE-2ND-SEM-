@@ -24,3 +24,36 @@ void setup() {
   delay(2000);
   lcd.clear();
 }
+
+void loop() {
+  int adcValue = analogRead(sensorPin);
+  float vAtA0 = adcValue * (supplyVoltage / 1023.0);
+
+  float voltageDrop = supplyVoltage - vAtA0;
+  float current = voltageDrop / R; 
+
+  float powerMW = supplyVoltage * current * 1000.0;
+
+  // CLEAN PRINT (prevents leftover garbage)
+  lcd.setCursor(0, 0);
+  lcd.print("I:");
+  lcd.print(current, 3);
+  lcd.print("A   ");
+
+  lcd.setCursor(0, 1);
+  lcd.print("P:");
+  lcd.print(powerMW, 1);
+  lcd.print("mW  ");
+
+  if (powerMW > thresholdMW) {   
+    digitalWrite(relayPin, LOW);
+    lcd.setCursor(12,1);
+    lcd.print("OFF");
+  } else {
+    digitalWrite(relayPin, HIGH);
+    lcd.setCursor(12,1);
+    lcd.print("ON ");
+  }
+  
+  delay(500);
+}
